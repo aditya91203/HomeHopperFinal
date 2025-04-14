@@ -24,7 +24,7 @@ function Profile() {
           throw new Error('JWT token not found');
         }
 
-        const response = await axios.get('http://localhost:5162/api/owner', { // Ensure the URL is correct
+        const response = await axios.get('http://localhost:5162/api/Owner/profile', { // Ensure the URL is correct
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -37,7 +37,7 @@ function Profile() {
         setProfile({
           name: response.data.name,
           email: response.data.email,
-          phone: response.data.contactDetails, // Update to use contactDetails
+          phone: response.data.phoneNumber, // Update to use contactDetails
           ownerId: response.data.ownerId // Set ownerId from response
         });
       } catch (error) {

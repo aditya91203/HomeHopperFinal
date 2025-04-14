@@ -1,13 +1,44 @@
 import { Link, Outlet } from 'react-router-dom';
-import { FaHome, FaPlus, FaClipboardList, FaFileContract, FaBell, FaUser, FaSignOutAlt } from 'react-icons/fa';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+import {
+  FaHome,
+  FaPlus,
+  FaClipboardList,
+  FaFileContract,
+  FaBell,
+  FaUser,
+  FaSignOutAlt
+} from 'react-icons/fa';
 import './OwnerDashboard.css';
 import FloatingHomeButton from '../FloatingHomeButton/FloatingHomeButton';
 
 function OwnerLayout() {
+  const [ownerName, setOwnerName] = useState("Owner");
+
+  useEffect(() => {
+    const token = localStorage.getItem("ownerToken");
+    if (!token) return;
+
+    axios
+      .get("http://localhost:5162/api/Owner/profile", {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      .then((res) => {
+        setOwnerName(res.data.fullName); // ✅ backend must return fullName or use res.data.name
+      })
+      .catch((err) => {
+        console.error("Failed to fetch owner name:", err);
+      });
+  }, []);
+
   const handleLogout = () => {
-    // Logout logic here
-    console.log('Owner logged out');
+    localStorage.removeItem('ownerToken'); // clear the JWT token
+    window.location.href = '/sell-login'; // redirect to login page
   };
+  
 
   return (
     <div className="owner-dashboard">
@@ -15,10 +46,10 @@ function OwnerLayout() {
       <div className="sidebar">
         <div className="profile-summary">
           <img src="https://via.placeholder.com/80" alt="Owner" />
-          <h3>John PropertyOwner</h3>
+          <h3>{ownerName}</h3> {/* ✅ dynamic name */}
           <p>Premium Member</p>
         </div>
-        
+
         <nav>
           <Link to="/owner" className="nav-link">
             <FaHome className="icon" /> Dashboard

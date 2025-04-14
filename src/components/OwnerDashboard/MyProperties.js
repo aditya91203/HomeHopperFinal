@@ -39,18 +39,15 @@ function MyProperties() {
         }
       );
 
-      console.log('API Response:', response.data);
-
       if (!response.data) {
         throw new Error('No data received from server');
       }
 
-      // Handle the special $values case from .NET API
       const dataArray = response.data.$values || 
                        (Array.isArray(response.data) ? response.data : [response.data]);
 
       const formattedProperties = dataArray.map((property, index) => ({
-        id: property.propertyID || property.id || index, // Fallback to index if no ID
+        id: property.propertyID || property.id || index, 
         title: property.propertyName || property.title || `Property ${index + 1}`,
         price: property.rentAmount || property.price || 0,
         address: property.address || 'Address not specified',
@@ -58,8 +55,8 @@ function MyProperties() {
         country: property.country || 'Country not specified',
         status: property.availabilityStatus ? 'Available' : 'Occupied',
         image: property.imagePath 
-          ? `http://localhost:5162/${property.imagePath.replace(/\\/g, '/')}`
-          : '/no-image-placeholder.jpg', // Use local placeholder
+          ? `http://localhost:5162${property.imagePath.replace(/\\/g, '/')}` // Full path to image
+          : '/assets/demo111.jpeg', // Default image if none exists
         amenities: property.amenities 
           ? (typeof property.amenities === 'string' 
               ? property.amenities.split(',').map(a => a.trim()) 
@@ -163,7 +160,7 @@ function MyProperties() {
                 src={property.image} 
                 alt={property.title} 
                 onError={(e) => {
-                  e.target.src = '/no-image-placeholder.png';
+                  e.target.src = '/assets/demo111.jpeg';
                 }}
               />
               <div className={`property-status-badge ${property.status.toLowerCase()}`}>
@@ -194,7 +191,7 @@ function MyProperties() {
 
             <div className="property-actions">
               <Link 
-                to={`/edit-property/${property.id}`} 
+                to={`/owner/edit-property/${property.id}`} 
                 className="btn-edit"
               >
                 <FaEdit /> Edit

@@ -30,6 +30,10 @@ import Notifications from './components/OwnerDashboard/Notifications';
 import EditProfile from './components/OwnerDashboard/EditProfile';
 import DeleteProfile from './components/OwnerDashboard/DeleteProfile';
 import UploadDocument from './components/OwnerDashboard/UploadDocument';
+import EditProperty from './components/OwnerDashboard/EditProperty'; // Ensure this import exists
+
+
+
 
 // Tenant Dashboard Components
 import TenantLayout from './components/TenantDashboard/TenantLayout';
@@ -83,6 +87,7 @@ function App() {
             <Route path="notifications" element={<Notifications />} />
             <Route path="editProfile" element={<EditProfile />} />
             <Route path="deleteProfile" element={<DeleteProfile />} />
+            <Route path="edit-property/:id" element={<EditProperty />} />
           </Route>
 
           {/* Tenant Dashboard Routes */}

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import {jwtDecode} from 'jwt-decode'; // Correct import statement
-import { FaUser, FaEnvelope, FaPhone, FaLock, FaSave } from 'react-icons/fa';
+import { jwtDecode } from 'jwt-decode';
+import { FaUser, FaPhone, FaLock, FaSave } from 'react-icons/fa';
 import './OwnerDashboard.css';
 
 function EditProfile() {
@@ -10,9 +10,10 @@ function EditProfile() {
   const navigate = useNavigate();
   const [profile, setProfile] = useState({
     name: location.state.profile.name || '',
-    phoneNumber: location.state.profile.phone || '', // Adjusted to match expected field name
-    password: '' // Initialize password as an empty string
+    phoneNumber: location.state.profile.phone || '',
+    password: ''
   });
+
   const [error, setError] = useState(null);
 
   const handleChange = (e) => {
@@ -23,47 +24,43 @@ function EditProfile() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem('ownerToken'); // Ensure the key matches the one used in SellLogin.js
-      if (!token) {
-        throw new Error('JWT token not found');
+      const token = localStorage.getItem('ownerToken');
+      if (!token) throw new Error('JWT token not found');
+
+      // Prepare payload as per OwnerUpdateDTO
+      const payload = {
+        name: profile.name,
+        contactDetails: profile.phoneNumber,
+      };
+      if (profile.password.trim() !== '') {
+        payload.newPassword = profile.password;
       }
 
-      const decodedToken = jwtDecode(token); // Decode the JWT token
-      const ownerId = decodedToken.ownerId; // Extract ownerId from the decoded token
+      console.log('📤 Sending payload:', payload);
 
-      if (!ownerId) {
-        throw new Error('Owner ID not found in token');
-      }
-
-      const payload = { ownerId, ...profile };
-      console.log('Profile data being sent:', payload); // Debugging log
-
-      const response = await axios.put('http://localhost:5162/api/Owner/update', payload, { // Ensure the URL is correct
+      const response = await axios.put('http://localhost:5162/api/Owner/update-profile', payload, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
 
-      console.log('Server response:', response); // Debugging log
-
       if (response.status === 200) {
         alert('Profile updated successfully!');
-        navigate('/owner/profile'); // Redirect to profile page after update
+        navigate('/owner/profile');
       } else {
-        throw new Error('Failed to update profile');
+        throw new Error('Update failed');
       }
-    } catch (error) {
-      console.error('Error updating profile:', error);
-      setError(error.message);
+    } catch (err) {
+      console.error('❌ Error updating profile:', err);
+      setError(err.message || 'Failed to update profile');
     }
   };
 
   return (
     <div className="edit-profile-page">
       <h2>Edit Profile</h2>
-      
       {error && <p className="error-message">{error}</p>}
-      
+
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label><FaUser /> Full Name</label>
@@ -72,6 +69,7 @@ function EditProfile() {
             name="name"
             value={profile.name}
             onChange={handleChange}
+            required
           />
         </div>
 
@@ -79,9 +77,10 @@ function EditProfile() {
           <label><FaPhone /> Phone</label>
           <input
             type="tel"
-            name="phoneNumber" // Adjusted to match expected field name
+            name="phoneNumber"
             value={profile.phoneNumber}
             onChange={handleChange}
+            required
           />
         </div>
 

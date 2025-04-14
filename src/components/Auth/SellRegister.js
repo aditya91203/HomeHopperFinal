@@ -25,11 +25,12 @@ const SellRegister = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setSuccess(false);
 
     try {
       const response = await axios.post('http://localhost:5162/api/Owner/register', formData);
 
-      if (response.data) {
+      if (response.status === 200) {
         setSuccess(true);
         setTimeout(() => navigate('/sell-login'), 2000);
       }
@@ -46,57 +47,62 @@ const SellRegister = () => {
           <h2>Register as Landlord</h2>
           <p>List and manage your properties</p>
         </div>
-        
-        {error && <div className="auth-error">{error}</div>}
-        {success && <div className="auth-success">Registration successful! Redirecting to login...</div>}
-        
+
+        {error && <div className="auth-error">{error.toString()}</div>}
+        {success && <div className="auth-success">✅ Registration successful! Redirecting...</div>}
+
         <form onSubmit={handleSubmit}>
           <div className="input-group">
             <FaUser />
-            <input 
-              type="text" 
+            <input
+              type="text"
               name="name"
-              placeholder="Full Name" 
-              required 
+              placeholder="Full Name"
+              required
               value={formData.name}
               onChange={handleChange}
             />
           </div>
+
           <div className="input-group">
             <FaEnvelope />
-            <input 
-              type="email" 
+            <input
+              type="email"
               name="email"
-              placeholder="Email" 
-              required 
+              placeholder="Email"
+              required
               value={formData.email}
               onChange={handleChange}
             />
           </div>
+
           <div className="input-group">
             <FaLock />
-            <input 
-              type="password" 
+            <input
+              type="password"
               name="password"
-              placeholder="Password" 
-              required 
+              placeholder="Password"
+              required
               value={formData.password}
               onChange={handleChange}
             />
           </div>
+
           <div className="input-group">
             <FaPhone />
-            <input 
-              type="tel" 
+            <input
+              type="tel"
               name="contactDetails"
-              placeholder="Phone Number" 
-              required 
+              placeholder="Phone Number"
+              required
               value={formData.contactDetails}
               onChange={handleChange}
             />
           </div>
+
           <button type="submit" className="auth-btn">Register</button>
         </form>
+
         <div className="auth-footer">
           <p>Already registered? <Link to="/sell-login">Login here</Link></p>
         </div>
